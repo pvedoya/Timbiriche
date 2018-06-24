@@ -1,7 +1,6 @@
 package main.Controller;
 
 import javafx.collections.ObservableList;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -20,12 +19,19 @@ import main.Model.Line;
 import main.Model.Player;
 import main.Model.Square;
 
+import static javafx.application.Platform.exit;
+
 
 public class Controller {
-    private TextField Player1Score,Player1Tag,Player2Tag,Player2Score;
-    private AnchorPane maxPane;
+    @FXML
+    private TextField Player1Score,Player1Tag,Player2Tag,Player2Score,CurrentPlayer;
+
+    @FXML
+    private AnchorPane pane;
+
     private GridPane grid;
-    private static final int SPACE = 5;
+
+    private static final int SPACE = 10;
 
     //colours
     private static final Paint circleColor = Color.BLACK;
@@ -43,9 +49,9 @@ public class Controller {
         setGameManager(gameManager);
         setBoard();
         setNames();
-        updateScore();
-        updateBoard();
-        maxPane.getChildren().add(grid);
+        updateFields();
+//        updateBoard();
+        pane.getChildren().add(grid);
     }
 
     private void setBoard() {
@@ -53,18 +59,19 @@ public class Controller {
         grid.setPadding(new Insets(SPACE,SPACE,SPACE,SPACE));
 
         int size = gm.getSize();
-        double width = maxPane.getWidth();
-        double height = maxPane.getHeight();
+        int cols = size + size - 1;
+        double width = pane.getWidth();
+        double height = pane.getHeight();
         double max = (height > width)? height : width;
 
-        double circleRaius = (max - SPACE) / (2 * (size + 3 * (size - 1)));
-        double length = 6 * circleRaius;
-        double tall = circleRaius * 2;
+        double radius = (max - SPACE) / (2 * (size + 3 * (size - 1)));
+        double length = 6 * radius;
+        double tall = radius * 2;
 
-        for(int i = 0; i < size; i++){
-            for(int j = 0; j < size; j++){
+        for(int i = 0; i < cols; i++){
+            for(int j = 0; j < cols; j++){
                 if(i % 2 == 0 && j % 2 == 0) {
-                    grid.add(new Circle(circleRaius, circleColor), i, j);
+                    grid.add(new Circle(radius, circleColor), i, j);
                 }else if (i % 2 == 1 && j % 2 == 0){
                     Rectangle hLine = new Rectangle(length,tall,emptyLineColor);
                     hLine.setOnMouseClicked(new RectangleEvent());
@@ -94,6 +101,8 @@ public class Controller {
         Player1Tag.textProperty().setValue(name);
         name = player2.isHuman()? "Player 2" : "Siri";
         Player2Tag.textProperty().setValue(name);
+
+        CurrentPlayer.textProperty().setValue("Current Player: " + gm.getCurrent().getColour());
     }
 
 
@@ -114,18 +123,19 @@ public class Controller {
     @FXML
     private void undoHandler(MouseEvent mouseEvent) {
         gm.undo();
-        updateBoard();
-        updateScore();
+//        updateBoard();
+        updateFields();
     }
 
-    private void updateScore() {
+    private void updateFields() {
         Player1Score.textProperty().setValue(String.valueOf(gm.getPlayer1().getScore()));
         Player2Score.textProperty().setValue(String.valueOf(gm.getPlayer2().getScore()));
+        CurrentPlayer.textProperty().setValue("Current Player: " + gm.getCurrent().getColour());
     }
 
     @FXML
     private void exitHandler(MouseEvent mouseEvent) {
-        gm.endGame();
+        exit();
     }
 
     @FXML
@@ -141,13 +151,14 @@ public class Controller {
             Integer col = GridPane.getColumnIndex(source);
             Integer row = GridPane.getRowIndex(source);
             boolean horizontal = row % 2 == 0;
+            System.out.println(row + " " + col + '\n');
             if(horizontal){
-                gm.move(new Line(col/2,row/2,(col/2) + 1,col/2));
+                gm.move(new Line(col/2,row/2,(col/2) + 1,row/2));
             }else{
-                gm.move(new Line(col/2,row/2,(col/2),(col/2)+ 1));
+                gm.move(new Line(col/2,row/2,(col/2),(row/2)+1));
             }
-            updateBoard();
-            updateScore();
+//            updateBoard();
+            updateFields();
         }
     }
 
@@ -162,19 +173,19 @@ public class Controller {
             i = GridPane.getColumnIndex(node);
             j = GridPane.getRowIndex(node);
             if(i % 2== 1 && j % 2 == 0){
-                if(board[j/2][i/2].getTop().isPainted()){
+                if(board[i/2][j/2].getTop().isPainted()){
                     ((Rectangle) node).setFill(usedLineColor);
                 }else{
                     ((Rectangle) node).setFill(emptyLineColor);
                 }
             }else if(i % 2 == 0 && j % 2 == 1){
-                if(board[j/2][i/2].getLeft().isPainted()){
+                if(board[i/2][j/2].getLeft().isPainted()){
                     ((Rectangle) node).setFill(usedLineColor);
                 }else{
                     ((Rectangle) node).setFill(emptyLineColor);
                 }
             } else if( i % 2 == 1 && j % 2 == 1){
-                if(board[j/2][i/2].checkComplete()){
+                if(board[i/2][j/2].checkComplete()){
                     ((Rectangle) node).setFill(squareComplete);
                 }else{
                     ((Rectangle) node).setFill(squareNotComplete);

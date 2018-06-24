@@ -9,8 +9,8 @@
         <module name="Timbiriche" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="Timbiriche" target="1.6" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="Timbiriche" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

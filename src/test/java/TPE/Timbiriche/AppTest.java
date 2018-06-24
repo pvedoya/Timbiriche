@@ -1,6 +1,8 @@
 package TPE.Timbiriche;
 
 
+import main.Model.GameManager;
+
 /**
  * Unit test for simple App.
  */

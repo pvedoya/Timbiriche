@@ -61,12 +61,19 @@ public class GameManager  implements Serializable{
     }
 
     public void move(Line line) {
+        if(current.isHuman()) {
+            current.addBoard(board);
+        }else{
+            try {
+                line = aiMove();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
-        current.addBoard(board);
-
-        int closedSquares = board.makeMove(line,current.getColour());
+        int closedSquares = board.makeMove(line, current.getColour());
         current.addPoints(closedSquares);
-
+        board.printBoard();
         nextTurn(closedSquares);
         return;
     }
@@ -93,7 +100,7 @@ public class GameManager  implements Serializable{
         return state;
     }
 
-    public Board aiMove() throws IOException {
+    public Line aiMove() throws IOException {
         Line line;
         int other = 1;
         if(current.getColour() == 1){
@@ -106,8 +113,7 @@ public class GameManager  implements Serializable{
             line = MiniMax.timeMiniMax(board,tod,prune,current.getColour(),other);
         }
 
-        move(line);
-        return board;
+        return line;
     }
 
     public Player getCurrent() {

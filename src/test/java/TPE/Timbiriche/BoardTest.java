@@ -1,6 +1,9 @@
 package TPE.Timbiriche;
 
 
+import main.Model.Board;
+import main.Model.GameManager;
+import main.Model.Line;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

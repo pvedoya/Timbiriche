@@ -1,5 +1,8 @@
 package TPE.Timbiriche;
 
+import main.Model.AIPlayer;
+import main.Model.Board;
+import main.Model.Line;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,23 +50,4 @@ public class IsItAliveTest {
 
 
         board.printBoard();
-    }
-
-    @Test
-    public void isItAliveTimeTest(){
-        AIPlayer cortana = new AIPlayer(1,2, 0,4,true);
-        long i = System.currentTimeMillis();
-        Line line = null;
-        try {
-            line = cortana.miniMax(board);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        i = System.currentTimeMillis() - i;
-        System.out.print(i);
-        System.out.print('\n');
-        board.makeMove(line,1);
-
-        board.printBoard();
-    }
-}
+    }}
