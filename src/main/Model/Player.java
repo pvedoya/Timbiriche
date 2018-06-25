@@ -10,8 +10,9 @@ public class Player implements Serializable{
     private int colour;
     private int score;
     private Stack<Board> playerUndo;
-
     private boolean human;
+
+    //Constructor
 
     public Player(int colour, boolean human) {
         this.colour = colour;
@@ -19,10 +20,9 @@ public class Player implements Serializable{
         this.human = human;
     }
 
-    public boolean isHuman(){
-        return human;
-    }
-
+    /*
+    *Used for the undo, it stores THE CURRENT PLAYER'S last move on the stack before making a move, and pops it when the button is pressed.
+     */
     public void addBoard(Board board){
         playerUndo.push(board.cloneBoard());
     }
@@ -34,6 +34,17 @@ public class Player implements Serializable{
     public boolean canUndo(){
         return !playerUndo.isEmpty();
     }
+
+
+    /*
+    *Set on true if player is human or false if it is AI (Cannot be changed), this returns if the Player is Human(true) or not (false).
+     */
+
+    public boolean isHuman(){
+        return human;
+    }
+
+    //Getters and Setters
 
     public int getColour() {
         return colour;
@@ -49,13 +60,6 @@ public class Player implements Serializable{
 
     public int getScore() {
         return score;
-    }
-
-    public Player clonePlayer(){
-        Player aux = new Player(colour,human);
-        this.score = score;
-        this.playerUndo = playerUndo;
-        return aux;
     }
 
     @Override
@@ -79,6 +83,8 @@ public class Player implements Serializable{
         result = 31 * result + (human ? 1 : 0);
         return result;
     }
+
+    //Used for saving and loading
 
     public void saveObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();

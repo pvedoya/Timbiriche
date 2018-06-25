@@ -12,6 +12,8 @@ public class Line implements Serializable{
     private int x2;
     private int y2;
 
+    //Constructor
+
     public Line(int x1, int y1, int x2, int y2) {
         this.painted = false;
         if(x1<0 || x2 < 0 || y1 < 0 || y2 < 0  ){
@@ -23,28 +25,24 @@ public class Line implements Serializable{
         this.y2 = y2;
     }
 
-    public int getX1() {
-        return x1;
-    }
 
-    public int getY1() {
-        return y1;
-    }
-
-    public int getX2() {
-        return x2;
-    }
-
-    public int getY2() {
-        return y2;
-    }
-
+    /*
+    *Used to control the state of the square(if the four lines are painted the square is completed),and tells the user interface if the line should be painted on screen.
+     */
     public boolean isPainted() {
         return painted;
     }
 
     public void paint(){
         this.painted = true;
+    }
+
+    //Creates a new instance of this line, used for saving the old Board in the Stack for UNDO.
+
+    public Line cloneLine(){
+        Line clone = new Line(x1,y1,x2,y2);
+        clone.painted = painted;
+        return clone;
     }
 
     @Override
@@ -70,12 +68,6 @@ public class Line implements Serializable{
         return result;
     }
 
-    public Line cloneLine(){
-        Line clone = new Line(x1,y1,x2,y2);
-        clone.painted = painted;
-        return clone;
-    }
-
     @Override
     public String toString() {
         return "Line{" +
@@ -85,6 +77,8 @@ public class Line implements Serializable{
                 ", y2=" + y2 +
                 '}';
     }
+
+    //Used for saving and loading
 
     public void saveObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();

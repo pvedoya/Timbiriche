@@ -11,7 +11,9 @@ public class Board implements Cloneable,Serializable{
     private Square[][] board;
     private int size;
     private int currentPlayer,score1,score2;
-    private Map<Line,Set<Square>> available;
+    private Map<Line,Set<Square>> available; //Set of available moves, and the squares it affects, a very effective way of making all the changes in each square.
+
+    //Constructors
 
     public Board(int n){
         if(n < 2) throw new IllegalArgumentException("ERROR: entry value must be greater than 1");
@@ -35,6 +37,10 @@ public class Board implements Cloneable,Serializable{
         this.available = availableMoves();
     }
 
+    /*
+    *Receives an empty matrix, and fills it with new Square instances, it creates the board.
+     */
+
     private void fillBoard(Square[][] b){
         for(int i = 0; i < b.length; i++){
             for(int j = 0; j < b.length ; j++){
@@ -44,11 +50,9 @@ public class Board implements Cloneable,Serializable{
         }
     }
 
-    public void printSquares(){
-        for(Line l : available.keySet()){
-            System.out.print(l.toString() + '\n');
-        }
-    }
+    /*
+    *Creates a new instance of the board.
+     */
 
     public Board cloneBoard(){
         Board clone = new Board(size+1,currentPlayer,score1,score2);
@@ -61,6 +65,11 @@ public class Board implements Cloneable,Serializable{
         clone.available = clone.availableMoves();
         return clone;
     }
+
+    /*
+    *Adds a new line by getting it from the available method, and iterating through the squares in the set, painting said line in each.
+    * It also checks if there were squares completed, and returns how many were complated.
+     */
 
     public int makeMove(Line line, int player){
         int completed = 0;
@@ -98,6 +107,10 @@ public class Board implements Cloneable,Serializable{
         return completed;
     }
 
+    /*
+    *Given a square and the last player to have made a move, it returns if said square was completed.
+     */
+
     private boolean checkCompleted(Square s, int player) {
         if(s.checkComplete()){
             s.setOwner(player);
@@ -112,6 +125,25 @@ public class Board implements Cloneable,Serializable{
         return false;
     }
 
+    /*
+    * Used to know if the game should be ended, by verifying of there are moves that can be made.
+     */
+
+    public boolean isComplete(){
+        return availableMoves().size() == 0;
+    }
+
+    /*
+    *Checks if the received line can be added to the board, by checking if the line belongs to the available map.
+     */
+
+    public boolean canMakeMove(Line line) {
+        return available.containsKey(line);
+    }
+
+
+
+    //Getters and Setters
     public int getScore(int player){
         if(player == 1){
             return score1;
@@ -119,6 +151,36 @@ public class Board implements Cloneable,Serializable{
         return score2;
     }
 
+    public Square[][] getBoard() {
+        return board;
+    }
+
+    public int getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public void setCurrentPlayer(int currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
+
+    public Map<Line, Set<Square>> getAvailable() {
+        return available;
+    }
+
+
+
+    /*
+    *Returns the player with the higher score.
+     */
+    public int getWinner(){
+        if(score1 > score2) return 1;
+        else if(score2 > score1) return 2;
+        return 0;
+    }
+
+    /*
+    *Returns a map containing, for each line still available to paint, a set containing all the squares where it is present.
+     */
     public Map<Line,Set<Square>> availableMoves(){
         Map<Line,Set<Square>> moves = new HashMap<Line,Set<Square>>();
 
@@ -126,58 +188,75 @@ public class Board implements Cloneable,Serializable{
             for(int j = 0; j < board.length; j++){
                 Square square = board[i][j];
 //                if(square.getAvailable() > 0){ //skips this box if available equals 0
-                    if(!square.getBottom().isPainted()){
-                        if(moves.containsKey(square.getBottom())){
-                            moves.get(square.getBottom()).add(square);
-                        }else{
-                            Set<Square> aux = new HashSet<Square>();
-                            aux.add(square);
-                            moves.put(square.getBottom(),aux);
-                        }}
-                    if(!square.getLeft().isPainted()){
-                        if(moves.containsKey(square.getLeft())){
-                            moves.get(square.getLeft()).add(square);
-                        }else{
-                            Set<Square> aux = new HashSet<Square>();
-                            aux.add(square);
-                            moves.put(square.getLeft(),aux);
-                        }}
-                    if(!square.getTop().isPainted()){
-                        if(moves.containsKey(square.getTop())){
-                            moves.get(square.getTop()).add(square);
-                        }else{
-                            Set<Square> aux = new HashSet<Square>();
-                            aux.add(square);
-                            moves.put(square.getTop(),aux);
-                        }}
-                    if(!square.getRight().isPainted()){
-                        if(moves.containsKey(square.getRight())){
-                            moves.get(square.getRight()).add(square);
-                        }else{
-                            Set<Square> aux = new HashSet<Square>();
-                            aux.add(square);
-                            moves.put(square.getRight(),aux);
-                        }
+                if(!square.getBottom().isPainted()){
+                    if(moves.containsKey(square.getBottom())){
+                        moves.get(square.getBottom()).add(square);
+                    }else{
+                        Set<Square> aux = new HashSet<Square>();
+                        aux.add(square);
+                        moves.put(square.getBottom(),aux);
+                    }}
+                if(!square.getLeft().isPainted()){
+                    if(moves.containsKey(square.getLeft())){
+                        moves.get(square.getLeft()).add(square);
+                    }else{
+                        Set<Square> aux = new HashSet<Square>();
+                        aux.add(square);
+                        moves.put(square.getLeft(),aux);
+                    }}
+                if(!square.getTop().isPainted()){
+                    if(moves.containsKey(square.getTop())){
+                        moves.get(square.getTop()).add(square);
+                    }else{
+                        Set<Square> aux = new HashSet<Square>();
+                        aux.add(square);
+                        moves.put(square.getTop(),aux);
+                    }}
+                if(!square.getRight().isPainted()){
+                    if(moves.containsKey(square.getRight())){
+                        moves.get(square.getRight()).add(square);
+                    }else{
+                        Set<Square> aux = new HashSet<Square>();
+                        aux.add(square);
+                        moves.put(square.getRight(),aux);
                     }
                 }
             }
+        }
 //        }
         return moves;
     }
 
-    public boolean isComplete(){
-        return availableMoves().size() == 0;
+
+    /*
+    *Used for calculating the heuristic, it returns how many squares of size N are present in the board.
+     */
+    public int sizeNSquares(int N) {
+        int count = 0;
+        for(int i = 0; i< board.length;i++){
+            for(int j = 0; j< board.length; j++){
+                if(board[i][j].getAvailable() == N){
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
-    public int getWinner(){
-        if(score1 > score2) return 1;
-        else if(score2 > score1) return 2;
-        return 0;
+
+    /*
+    *Used for calculating the heuristic, it returns the difference between the current player and the other player.
+     */
+    public int scoreDifference(int player){
+        if(player == 1){
+            return score1 - score2;
+        }
+        return score2 - score1;
     }
 
-    public boolean canMakeMove(Line line) {
-        return available.containsKey(line);
-    }
+    /*
+    *Methods that prints a rustic board with 1's and 0's, used before there was a UI, to know the state of the board.
+     */
 
     public void checkState() {
         System.out.print("Board:" + '\n');
@@ -194,72 +273,6 @@ public class Board implements Cloneable,Serializable{
         }
         System.out.print('\n');
 
-    }
-
-    public Square[][] getBoard() {
-        return board;
-    }
-
-    public int sizeNSquares(int N) {
-        int count = 0;
-        for(int i = 0; i< board.length;i++){
-            for(int j = 0; j< board.length; j++){
-                if(board[i][j].getAvailable() == N){
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
-
-    public int getCurrentPlayer() {
-        return currentPlayer;
-    }
-
-    public void setCurrentPlayer(int currentPlayer) {
-        this.currentPlayer = currentPlayer;
-    }
-
-    public int getScore1() {
-        return score1;
-    }
-
-    public void setScore1(int score1) {
-        this.score1 = score1;
-    }
-
-    public int getScore2() {
-        return score2;
-    }
-
-    public void setScore2(int score2) {
-        this.score2 = score2;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Board board1 = (Board) o;
-
-        if (size != board1.size) return false;
-        if (currentPlayer != board1.currentPlayer) return false;
-        if (score1 != board1.score1) return false;
-        if (score2 != board1.score2) return false;
-        if (!Arrays.deepEquals(board, board1.board)) return false;
-        return available != null ? available.equals(board1.available) : board1.available == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Arrays.deepHashCode(board);
-        result = 31 * result + size;
-        result = 31 * result + currentPlayer;
-        result = 31 * result + score1;
-        result = 31 * result + score2;
-        result = 31 * result + (available != null ? available.hashCode() : 0);
-        return result;
     }
 
     public void printBoard(){
@@ -318,16 +331,39 @@ public class Board implements Cloneable,Serializable{
         System.out.print("\n---------------\n");
     }
 
-    public Map<Line, Set<Square>> getAvailable() {
-        return available;
+    public void printSquares(){
+        for(Line l : available.keySet()){
+            System.out.print(l.toString() + '\n');
+        }
     }
 
-    public int scoreDifference(int player){
-        if(player == 1){
-            return score1 - score2;
-        }
-        return score2 - score1;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Board board1 = (Board) o;
+
+        if (size != board1.size) return false;
+        if (currentPlayer != board1.currentPlayer) return false;
+        if (score1 != board1.score1) return false;
+        if (score2 != board1.score2) return false;
+        if (!Arrays.deepEquals(board, board1.board)) return false;
+        return available != null ? available.equals(board1.available) : board1.available == null;
     }
+
+    @Override
+    public int hashCode() {
+        int result = Arrays.deepHashCode(board);
+        result = 31 * result + size;
+        result = 31 * result + currentPlayer;
+        result = 31 * result + score1;
+        result = 31 * result + score2;
+        result = 31 * result + (available != null ? available.hashCode() : 0);
+        return result;
+    }
+
+    //Used for loading and saving
 
     public void saveObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();

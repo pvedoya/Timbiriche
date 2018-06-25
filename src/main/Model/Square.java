@@ -14,6 +14,8 @@ public class Square implements Serializable{
     private int x;
     private int y;
 
+    //Constructor
+
     public Square(int x, int y) {
         this.owner = 0;
         this.top = new Line(x,y,x+1,y);
@@ -24,13 +26,17 @@ public class Square implements Serializable{
         this.y = y;
     }
 
+    /*
+    *Used after adding a new line, it  returns if the square is completed.
+     */
+
     public boolean checkComplete(){
         return (top.isPainted() && bottom.isPainted() && left.isPainted() && right.isPainted());
     }
 
-    public double getX() {
-        return x;
-    }
+    /*
+    * Returns how many of the square's lines are available for painting
+     */
 
     public int getAvailable(){
         int counter = 0;
@@ -48,6 +54,8 @@ public class Square implements Serializable{
         }
         return counter;
     }
+
+    //Getters and Setters
 
     public Line getTop() {
         return top;
@@ -73,6 +81,20 @@ public class Square implements Serializable{
         return owner;
     }
 
+    /*
+    Creates a new instance of this Square, used for saving the old Board in the Stack for UNDO.
+     */
+
+    public Square cloneSquare(){
+        Square aux = new Square(x, y);
+        aux.owner = owner;
+        aux.bottom = bottom.cloneLine();
+        aux.left = left.cloneLine();
+        aux.top = top.cloneLine();
+        aux.right = right.cloneLine();
+        return aux;
+    }
+
     @Override
     public String toString() {
         return "Square{" +
@@ -83,17 +105,35 @@ public class Square implements Serializable{
                 '}';
     }
 
-    public Square cloneSquare(){
-        Square aux = new Square(x, y);
-        aux.owner = owner;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        aux.bottom = bottom.cloneLine();
-        aux.left = left.cloneLine();
-        aux.top = top.cloneLine();
-        aux.right = right.cloneLine();
+        Square square = (Square) o;
 
-        return aux;
+        if (owner != square.owner) return false;
+        if (x != square.x) return false;
+        if (y != square.y) return false;
+        if (top != null ? !top.equals(square.top) : square.top != null) return false;
+        if (bottom != null ? !bottom.equals(square.bottom) : square.bottom != null) return false;
+        if (left != null ? !left.equals(square.left) : square.left != null) return false;
+        return right != null ? right.equals(square.right) : square.right == null;
     }
+
+    @Override
+    public int hashCode() {
+        int result = owner;
+        result = 31 * result + (top != null ? top.hashCode() : 0);
+        result = 31 * result + (bottom != null ? bottom.hashCode() : 0);
+        result = 31 * result + (left != null ? left.hashCode() : 0);
+        result = 31 * result + (right != null ? right.hashCode() : 0);
+        result = 31 * result + x;
+        result = 31 * result + y;
+        return result;
+    }
+
+    //Used for loading and saving
 
     public void saveObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();

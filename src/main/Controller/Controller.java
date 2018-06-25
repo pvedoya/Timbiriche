@@ -23,6 +23,9 @@ import static javafx.application.Platform.exit;
 
 
 public class Controller {
+
+    //Used to make art
+
     @FXML
     private TextField Player1Score,Player1Tag,Player2Tag,Player2Score,CurrentPlayer;
 
@@ -45,6 +48,10 @@ public class Controller {
     private Main main;
     private Player player1,player2;
 
+    /*
+    *Sets up the visual environment, paints the board, initial scores, etc..
+     */
+
     public void initialize(GameManager gameManager){
         setGameManager(gameManager);
         setBoard();
@@ -53,6 +60,10 @@ public class Controller {
         updateBoard();
         pane.getChildren().add(grid);
     }
+
+    /*
+    *Paint the board, by creating a matrix of squares, circles and rectangles, representing the different parts of the board.
+     */
 
     private void setBoard() {
         grid = new GridPane();
@@ -89,6 +100,8 @@ public class Controller {
 
     }
 
+    //Setters
+
     public void setMain(Main main) {
         this.main = main;
     }
@@ -105,10 +118,11 @@ public class Controller {
         CurrentPlayer.textProperty().setValue("Current Player: " + gm.getCurrent().getColour());
     }
 
-
     private void setGameManager(GameManager gameManager){
         this.gm = gameManager;
     }
+
+    //Button Handlers
 
     @FXML
     private void saveHandler(MouseEvent mouseEvent) {
@@ -164,8 +178,7 @@ public class Controller {
         }
     }
 
-
-    /*corregir*/
+    //Changes the colours of the board assets to identify them as selected or not.
 
     private void updateBoard(){
         Board board = gm.getBoard();

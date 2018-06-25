@@ -12,6 +12,8 @@ public class AIPlayer extends Player implements Serializable{
     private Board currBoard;
     private int otherColor;
 
+    //Constructor
+
     public AIPlayer(int color, int otherColor, int mode, int tod, boolean prune) {
         super(color,false);
         this.mode = mode;
@@ -21,7 +23,7 @@ public class AIPlayer extends Player implements Serializable{
     }
 
     /*
-    * Calls minimax algorithm to seaerch for a solution using depth or time
+    * Calls minimax algorithm to search for a solution using depth or time
     * */
 
     public Line miniMax(Board board) throws IOException {
@@ -32,6 +34,9 @@ public class AIPlayer extends Player implements Serializable{
 
         return MiniMax.depthMiniMax(currBoard, tod, prune, getColour(), otherColor);
     }
+
+    //Used for saving and loading
+
     public void saveObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
         out.writeObject(otherColor);
@@ -50,4 +55,29 @@ public class AIPlayer extends Player implements Serializable{
         currBoard = (Board) ois.readObject();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        AIPlayer aiPlayer = (AIPlayer) o;
+
+        if (mode != aiPlayer.mode) return false;
+        if (tod != aiPlayer.tod) return false;
+        if (prune != aiPlayer.prune) return false;
+        if (otherColor != aiPlayer.otherColor) return false;
+        return currBoard != null ? currBoard.equals(aiPlayer.currBoard) : aiPlayer.currBoard == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + mode;
+        result = 31 * result + tod;
+        result = 31 * result + (prune ? 1 : 0);
+        result = 31 * result + (currBoard != null ? currBoard.hashCode() : 0);
+        result = 31 * result + otherColor;
+        return result;
+    }
 }

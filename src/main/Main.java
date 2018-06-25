@@ -36,14 +36,6 @@ public class Main extends Application implements Serializable{
             throw new IllegalStateException();
         }
 
-//        parameters = new ArrayList();
-//        parameters.add(0,3);
-//        parameters.add(1,0);
-//        parameters.add(2,1);
-//        parameters.add(3,3);
-//        parameters.add(4,true);
-//        parameters.add(5,null);
-
         FXMLLoader paneLoader = new FXMLLoader(getClass().getResource("gameView.fxml"));
         Parent root = paneLoader.load();
         Controller controller = paneLoader.getController();
@@ -64,6 +56,10 @@ public class Main extends Application implements Serializable{
 
         controller.initialize(manager);
     }
+
+    /*
+    * Parses the parameters from the terminal's input by iterating through the arguments and adding each case to an arrayList containing said arguments.
+     */
 
     private ArrayList getInput(Parameters parameters) {
         ArrayList aux = new ArrayList();
@@ -136,12 +132,14 @@ public class Main extends Application implements Serializable{
         return aux;
     }
 
-
+    //Contructor-ish
 
     public GameManager restart(){
         manager = new GameManager((int)parameters.get(0),(int)parameters.get(1),(int)parameters.get(2),(int)parameters.get(3),(boolean)parameters.get(4));
         return manager;
     }
+
+    //Loading and saving methods - File management methods
 
     public void load(){
         FileInputStream fileInputStream = null;
