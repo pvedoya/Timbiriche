@@ -102,11 +102,11 @@ public class Node {
         File file = new File("dotFile.dot");
         FileWriter fileWriter = new FileWriter(file);
         fileWriter.write("digraph Tree {\n");
-        fileWriter.write(this.id + "[label=\"" +"Start " + "score: " + this.score + "\"");
+        fileWriter.write(this.id + "[label=\"" +"Start " + " score: " + this.score + "\" shape = " + getShape(this));
         if(this.used){
-            fileWriter.write(", style=filled, fillcolor=green");
+            fileWriter.write(", style=filled, color=green");
         }else if (this.pruned){
-            fileWriter.write(", style=filled, fillcolor=grey");
+            fileWriter.write(", style=filled, color=grey");
         }
         fileWriter.write("];\n");
         for(Node node : this.outcomes){
@@ -121,12 +121,12 @@ public class Node {
 
     private void createFile(Node node, FileWriter fileWriter) throws IOException {
         fileWriter.write(node.id + " [label=\"");
-        fileWriter.write("Score: " + node.score + "\"");
+        fileWriter.write("Score: " + node.score + "\", shape = " + getShape(node));
         if(node.pruned){
-            fileWriter.write(", style=filled, fillcolor=grey");
+            fileWriter.write(", style=filled, color=grey");
         }
         if(node.used){
-            fileWriter.write("style=filled, fillcolor=green");
+            fileWriter.write("style=filled, color=green");
         }
         fileWriter.write("];\n");
         for(Node outcome : node.outcomes){
@@ -135,6 +135,10 @@ public class Node {
         for (Node outcome : node.outcomes){
             fileWriter.write(this.id + "->" + outcome.id + "\n");
         }
+    }
+
+    private String getShape(Node node) {
+        return node.max == 1 ? "rectangle" : "elipse";
     }
 
     @Override
