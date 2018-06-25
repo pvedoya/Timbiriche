@@ -116,10 +116,12 @@ public class Controller {
     }
 
     @FXML
-    private void undoHandler(MouseEvent mouseEvent) {
-        gm.undo();
-        updateFields();
-        updateBoard();
+        private void undoHandler(MouseEvent mouseEvent) {
+        if(gm.getState() == 1) {
+            gm.undo();
+            updateFields();
+            updateBoard();
+        }
     }
 
     private void updateFields() {
@@ -143,12 +145,6 @@ public class Controller {
         exit();
     }
 
-    @FXML
-    private void dotFileHandler(MouseEvent mouseEvent) {
-        main.generateDotFile();
-    }
-
-
     private class RectangleEvent implements EventHandler<MouseEvent> {
         @Override
         public void handle(MouseEvent event) {
@@ -157,7 +153,6 @@ public class Controller {
                 Integer col = GridPane.getColumnIndex(source);
                 Integer row = GridPane.getRowIndex(source);
                 boolean horizontal = row % 2 == 0;
-                System.out.println(row + " " + col + '\n');
                 if (horizontal) {
                     gm.move(new Line(col / 2, row / 2, (col / 2) + 1, row / 2));
                 } else {
@@ -204,11 +199,14 @@ public class Controller {
         }
 
         if(gm.getState() == 0){
-            System.out.println("Entro");
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             Player player = gm.getWinningPlayer();
             alert.setContentText("GAME FINISHED");
-            alert.setContentText("GAME FINISHED, " + (player.isHuman()? player.getColour() : (player.getColour() == 1 ? "Cortana " : "Siri ")) + "Wins");
+            if(player != null) {
+                alert.setContentText("GAME FINISHED, " + (player.isHuman() ? "Player " + player.getColour() : (player.getColour() == 1 ? "Cortana" : "Siri")) + " Wins");
+            }else{
+                alert.setContentText("GAME FINISHED, Its a Tie!" );
+            }
             alert.showAndWait();
         }
     }

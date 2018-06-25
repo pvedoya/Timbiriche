@@ -10,9 +10,10 @@ public class MiniMax {
         Node node  = new Node(currBoard,player,other,null);
         int best = MIN;
         Line toAdd = null;
+        Node bestBranch = null;
+
         node.possiblities();
         node.visit();
-        Node bestBranch = null;
 
         for(Node out : node.outcomes){
             int local = depthMiniMax(out,false,prune, level,Integer.MIN_VALUE,Integer.MAX_VALUE);
@@ -22,6 +23,7 @@ public class MiniMax {
                 bestBranch = out;
             }
         }
+        //Prepares Node for the .dot file
         bestBranch.use();
         node.setScore(best);
         node.use();
@@ -39,6 +41,7 @@ public class MiniMax {
         if (isMax) {
             Node maxNode = null;
             int max = MIN;
+
             node.possiblities();
 
             for (Node out : node.outcomes) {
@@ -77,14 +80,14 @@ public class MiniMax {
         }
     }
 
-    //revisar
     public static Line timeMiniMax(Board currBoard, int time, boolean prune,int player, int other) throws IOException {
+        int best = MIN;
         Node node = new Node(currBoard, player,other,null);
         Line toAdd = null;
-        node.possiblities();
-        int best = MIN;
-        node.visit();
         Node bestBranch = null;
+
+        node.possiblities();
+        node.visit();
 
         for(Node out : node.outcomes){
             int local = timeMiniMax(out,false,time + System.currentTimeMillis(),prune,Integer.MIN_VALUE,Integer.MAX_VALUE);
@@ -94,6 +97,7 @@ public class MiniMax {
                 bestBranch = out;
             }
         }
+        //Prepares Node for the .dot file
         bestBranch.use();
         node.setScore(best);
         node.use();
@@ -101,20 +105,22 @@ public class MiniMax {
         return toAdd;
     }
 
-    private static int timeMiniMax(Node node, boolean isMax, long timeLimit, boolean prune, int alpha, int beta) {
+    private static int timeMiniMax(Node node, boolean isMax, long maxTime, boolean prune, int alpha, int beta) {
         node.visit();
-        if(System.currentTimeMillis() == timeLimit){
+
+        if(System.currentTimeMillis() >= maxTime ||  node.getBoard().availableMoves().isEmpty()){
             int eval = evaluate(node.getAdded(), node.getBoard(), node.getMax());
             node.setScore(eval);
             return eval;
         }
         if(isMax){
-            int max = MIN;
-            node.possiblities();
             Node maxNode = null;
+            int max = MIN;
+
+            node.possiblities();
 
             for(Node out : node.outcomes){
-                int local = timeMiniMax(out,!isMax,timeLimit,prune,alpha,beta);
+                int local = timeMiniMax(out,!isMax,maxTime,prune,alpha,beta);
                 if(local > max){
                     max = local;
                     alpha = Math.max(alpha, local);
@@ -133,7 +139,7 @@ public class MiniMax {
             node.possiblities();
 
             for(Node out: node.outcomes){
-                int local = timeMiniMax(out,true,timeLimit,prune,alpha,beta);
+                int local = timeMiniMax(out,true,maxTime,prune,alpha,beta);
                 if(local < min){
                     min = local;
                     beta = Math.min(beta, local);
@@ -151,13 +157,11 @@ public class MiniMax {
 
     private static int evaluate(Line added, Board board, int player){
         int value;
-        value = board.getScore(player) * 10;
+        value = board.scoreDifference(player)  * 20;
         if(board.getCurrentPlayer() == player){
-            value -= board.sizeNSquares(3)*50;
-            value += board.sizeNSquares(2);
+            value = value - board.sizeNSquares(3)*5 + board.sizeNSquares(2); //the idea is that the ai doesn't want to leave size 3 squares but it wants to leave size two squares tho
         }else{
-            value += board.sizeNSquares(3)*50;
-            value -= board.sizeNSquares(2);
+            value = value + board.sizeNSquares(3)*5 - board.sizeNSquares(2);
         }
         return value;
     }

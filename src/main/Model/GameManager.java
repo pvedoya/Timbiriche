@@ -53,8 +53,8 @@ public class GameManager  implements Serializable{
     public void undo(){
         if(current.canUndo()) {
             board = current.getBoard();
-            current.setScore(board.getScore(current.getColour()));
-            board.printBoard();
+            player1.setScore(board.getScore(1));
+            player2.setScore(board.getScore(2));
         }else{
             System.out.print("No previous play found!");
         }
@@ -64,11 +64,8 @@ public class GameManager  implements Serializable{
         current.addBoard(board);
         int closedSquares = board.makeMove(line, current.getColour());
         current.addPoints(closedSquares);
-        board.printBoard();
         nextTurn(closedSquares);
-
-        if(board.getAvailable().size() == 0){
-            System.out.println("endit");
+        if(board.availableMoves().size() == 0){
             endGame();
         }
         return;
@@ -160,7 +157,8 @@ public class GameManager  implements Serializable{
 
     public Player getWinningPlayer(){
         if(board.getWinner() == 1) return player1;
-        return player2;
+        if(board.getWinner() == 2)return player2;
+        return null;
     }
 }
 

@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import static javafx.application.Platform.exit;
 
 public class Main extends Application implements Serializable{
-    private static final int WIDTH = 1000;
-    private static final int HEIGHT = 1000;
+    private static final int WIDTH = 800;
+    private static final int HEIGHT = 600;
 
     private ArrayList parameters;
     private Stage primaryStage;
@@ -30,26 +30,26 @@ public class Main extends Application implements Serializable{
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-//        parameters = getInput(getParameters());
-//        if(parameters == null){
-//            exit();
-//            throw new IllegalStateException();
-//        }
+        parameters = getInput(getParameters());
+        if(parameters == null){
+            exit();
+            throw new IllegalStateException();
+        }
 
-        parameters = new ArrayList();
-        parameters.add(0,3);
-        parameters.add(1,0);
-        parameters.add(2,1);
-        parameters.add(3,3);
-        parameters.add(4,true);
-        parameters.add(5,null);
+//        parameters = new ArrayList();
+//        parameters.add(0,3);
+//        parameters.add(1,0);
+//        parameters.add(2,1);
+//        parameters.add(3,3);
+//        parameters.add(4,true);
+//        parameters.add(5,null);
 
         FXMLLoader paneLoader = new FXMLLoader(getClass().getResource("gameView.fxml"));
         Parent root = paneLoader.load();
         Controller controller = paneLoader.getController();
         controller.setMain(this);
 
-        if(parameters.get(5) != null){
+        if(parameters.size() == 6){
             load();
         }else{
             restart();
@@ -182,7 +182,7 @@ public class Main extends Application implements Serializable{
     private File getFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save");
-        fileChooser.setInitialFileName("SaveName");
+        fileChooser.setInitialFileName("SaveName.txt");
         return fileChooser.showSaveDialog(new Stage());
     }
 
@@ -192,12 +192,8 @@ public class Main extends Application implements Serializable{
     }
 
     private void readObject(final ObjectInputStream ois) throws IOException, ClassNotFoundException {
-        manager = (GameManager) ois.readObject();
         parameters = (ArrayList) ois.readObject();
+        manager = (GameManager) ois.readObject();
     }
 
-    public void generateDotFile(){
-        File file = getFile();
-//        writeToFile(manager.);
-    }
 }

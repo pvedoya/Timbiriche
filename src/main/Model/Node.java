@@ -23,7 +23,7 @@ public class Node { //Stands for possibility node, not for position node(but it 
 
     public Node(Board board, int max, int min, Line added) {
         this.board = board.cloneBoard();
-        this.outcomes = new HashSet<Node>();
+        this.outcomes = new HashSet<>();
         this.max = max;
         this.min = min;
         this.added = added;
@@ -80,7 +80,7 @@ public class Node { //Stands for possibility node, not for position node(but it 
     }
 
     public void createFile() throws IOException {
-        File file = new File("dotFile.gv");
+        File file = new File("dotFile.dot");
         FileWriter fileWriter = new FileWriter(file);
         fileWriter.write("digraph Tree {\n");
         fileWriter.write(this.id + "[label=\"" +"Start " + "score: " + this.score + "\"");
@@ -102,7 +102,6 @@ public class Node { //Stands for possibility node, not for position node(but it 
 
     private void createFile(Node node, FileWriter fileWriter) throws IOException {
         fileWriter.write(node.id + " [label=\"");
-        fileWriter.write("(" + node.added.getX1()+","+node.added.getY1()+","+node.added.getX2()+","+node.added.getY2()+")");
         fileWriter.write("Score: " + node.score + "\"");
         if(node.pruned){
             fileWriter.write(", style=filled, fillcolor=grey");

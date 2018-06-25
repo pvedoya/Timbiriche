@@ -1,8 +1,12 @@
 package main.Model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.*;
 
-public class Board implements Cloneable{
+public class Board implements Cloneable,Serializable{
 
     private Square[][] board;
     private int size;
@@ -90,7 +94,7 @@ public class Board implements Cloneable{
                 }
             }
         }
-        available.remove(line);
+        available=getAvailable();
         return completed;
     }
 
@@ -258,8 +262,6 @@ public class Board implements Cloneable{
         return result;
     }
 
-    //temporary way of knowing what the hell is happening
-    //TODO: implement UI
     public void printBoard(){
         String string;
         for(int i = 0; i < board.length; i++){
@@ -319,4 +321,32 @@ public class Board implements Cloneable{
     public Map<Line, Set<Square>> getAvailable() {
         return available;
     }
+
+    public int scoreDifference(int player){
+        if(player == 1){
+            return score1 - score2;
+        }
+        return score2 - score1;
+    }
+
+    public void saveObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        out.writeObject(board);
+        out.writeObject(size);
+        out.writeObject(currentPlayer);
+        out.writeObject(score1);
+        out.writeObject(score2);
+        out.writeObject(available);
+    }
+
+    public void loadObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        board = (Square[][]) ois.readObject();
+        size= (int) ois.readObject();
+        currentPlayer = (int) ois.readObject();
+        score1 = (int)ois.readObject();
+        score2 = (int)ois.readObject();
+        available= (Map<Line,Set<Square>>) ois.readObject();
+    }
+
 }
