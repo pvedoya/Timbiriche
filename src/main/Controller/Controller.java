@@ -5,6 +5,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -14,10 +15,9 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import main.Main;
-import main.Model.GameManager;
-import main.Model.Line;
-import main.Model.Player;
-import main.Model.Square;
+import main.Model.*;
+
+import java.io.IOException;
 
 import static javafx.application.Platform.exit;
 
@@ -35,9 +35,9 @@ public class Controller {
 
     //colours
     private static final Paint circleColor = Color.BLACK;
-    private static final Paint emptyLineColor = Color.WHITE;
+    private static final Paint emptyLineColor = Color.WHEAT;
     private static final Paint usedLineColor = Color.BLACK;
-    private static final Paint squareNotComplete = Color.BROWN;
+    private static final Paint squareNotComplete = Color.WHITE;
     private static final Paint squareComplete = Color.BLUE;
 
     //assets
@@ -50,7 +50,7 @@ public class Controller {
         setBoard();
         setNames();
         updateFields();
-//        updateBoard();
+        updateBoard();
         pane.getChildren().add(grid);
     }
 
@@ -72,7 +72,7 @@ public class Controller {
             for(int j = 0; j < cols; j++){
                 if(i % 2 == 0 && j % 2 == 0) {
                     grid.add(new Circle(radius, circleColor), i, j);
-                }else if (i % 2 == 1 && j % 2 == 0){
+                }else if (i % 2 == 1 && j % 2 == 0 ){
                     Rectangle hLine = new Rectangle(length,tall,emptyLineColor);
                     hLine.setOnMouseClicked(new RectangleEvent());
                     grid.add(hLine,i,j);
@@ -116,21 +116,26 @@ public class Controller {
     }
 
     @FXML
-    private void loadHandler(MouseEvent mouseEvent) {
-        main.load();
-    }
-
-    @FXML
     private void undoHandler(MouseEvent mouseEvent) {
         gm.undo();
-//        updateBoard();
         updateFields();
+        updateBoard();
     }
 
     private void updateFields() {
         Player1Score.textProperty().setValue(String.valueOf(gm.getPlayer1().getScore()));
         Player2Score.textProperty().setValue(String.valueOf(gm.getPlayer2().getScore()));
         CurrentPlayer.textProperty().setValue("Current Player: " + gm.getCurrent().getColour());
+    }
+
+    @FXML
+    private void AIMoveHandler() throws IOException {
+        if(!gm.getCurrent().isHuman()){
+            Line line = gm.aiMove();
+            gm.move(line);
+            updateFields();
+            updateBoard();
+        }
     }
 
     @FXML
@@ -147,18 +152,20 @@ public class Controller {
     private class RectangleEvent implements EventHandler<MouseEvent> {
         @Override
         public void handle(MouseEvent event) {
-            Node source = (Node) event.getSource();
-            Integer col = GridPane.getColumnIndex(source);
-            Integer row = GridPane.getRowIndex(source);
-            boolean horizontal = row % 2 == 0;
-            System.out.println(row + " " + col + '\n');
-            if(horizontal){
-                gm.move(new Line(col/2,row/2,(col/2) + 1,row/2));
-            }else{
-                gm.move(new Line(col/2,row/2,(col/2),(row/2)+1));
+            if(gm.getCurrent().isHuman()) {
+                Node source = (Node) event.getSource();
+                Integer col = GridPane.getColumnIndex(source);
+                Integer row = GridPane.getRowIndex(source);
+                boolean horizontal = row % 2 == 0;
+                System.out.println(row + " " + col + '\n');
+                if (horizontal) {
+                    gm.move(new Line(col / 2, row / 2, (col / 2) + 1, row / 2));
+                } else {
+                    gm.move(new Line(col / 2, row / 2, (col / 2), (row / 2) + 1));
+                }
+                updateFields();
+                updateBoard();
             }
-//            updateBoard();
-            updateFields();
         }
     }
 
@@ -166,31 +173,43 @@ public class Controller {
     /*corregir*/
 
     private void updateBoard(){
-        Square[][] board = gm.getBoard().getBoard();
+        Board board = gm.getBoard();
         ObservableList<Node> assets = grid.getChildren();
-        int i,j;
+
+        int col,row;
         for(Node node : assets){
-            i = GridPane.getColumnIndex(node);
-            j = GridPane.getRowIndex(node);
-            if(i % 2== 1 && j % 2 == 0){
-                if(board[i/2][j/2].getTop().isPainted()){
+            col = GridPane.getColumnIndex(node);
+            row = GridPane.getRowIndex(node);
+            if(col % 2 == 1 && row % 2 == 0 ){
+                Line line = new Line(col/2,row/2,(col/2) + 1,row/2);
+                if(!board.getAvailable().containsKey(line)){
                     ((Rectangle) node).setFill(usedLineColor);
                 }else{
                     ((Rectangle) node).setFill(emptyLineColor);
                 }
-            }else if(i % 2 == 0 && j % 2 == 1){
-                if(board[i/2][j/2].getLeft().isPainted()){
+            }else if(col % 2 == 0 && row % 2 == 1){
+                Line line = new Line(col/2,row/2,col/2,row/2+1);
+                if(!board.getAvailable().containsKey(line)){
                     ((Rectangle) node).setFill(usedLineColor);
                 }else{
                     ((Rectangle) node).setFill(emptyLineColor);
                 }
-            } else if( i % 2 == 1 && j % 2 == 1){
-                if(board[i/2][j/2].checkComplete()){
+            } else if( col % 2 == 1 && row % 2 == 1){
+                if(board.getBoard()[row/2][col/2].checkComplete()){
                     ((Rectangle) node).setFill(squareComplete);
                 }else{
                     ((Rectangle) node).setFill(squareNotComplete);
                 }
             }
+        }
+
+        if(gm.getState() == 0){
+            System.out.println("Entro");
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            Player player = gm.getWinningPlayer();
+            alert.setContentText("GAME FINISHED");
+            alert.setContentText("GAME FINISHED, " + (player.isHuman()? player.getColour() : (player.getColour() == 1 ? "Cortana " : "Siri ")) + "Wins");
+            alert.showAndWait();
         }
     }
 

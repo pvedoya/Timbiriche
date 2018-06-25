@@ -153,9 +153,11 @@ public class MiniMax {
         int value;
         value = board.getScore(player) * 10;
         if(board.getCurrentPlayer() == player){
-            value += board.sizeNSquares(3)*5 + board.sizeNSquares(2);
+            value -= board.sizeNSquares(3)*50;
+            value += board.sizeNSquares(2);
         }else{
-            value -= board.sizeNSquares(3)*5 + board.sizeNSquares(2);
+            value += board.sizeNSquares(3)*50;
+            value -= board.sizeNSquares(2);
         }
         return value;
     }

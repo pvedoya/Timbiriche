@@ -61,20 +61,16 @@ public class GameManager  implements Serializable{
     }
 
     public void move(Line line) {
-        if(current.isHuman()) {
-            current.addBoard(board);
-        }else{
-            try {
-                line = aiMove();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
+        current.addBoard(board);
         int closedSquares = board.makeMove(line, current.getColour());
         current.addPoints(closedSquares);
         board.printBoard();
         nextTurn(closedSquares);
+
+        if(board.getAvailable().size() == 0){
+            System.out.println("endit");
+            endGame();
+        }
         return;
     }
 
@@ -160,6 +156,11 @@ public class GameManager  implements Serializable{
 
     public int getSize() {
         return size;
+    }
+
+    public Player getWinningPlayer(){
+        if(board.getWinner() == 1) return player1;
+        return player2;
     }
 }
 
