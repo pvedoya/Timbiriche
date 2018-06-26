@@ -1,15 +1,12 @@
-package test;
-
-
-import main.Model.Board;
-import main.Model.GameManager;
-import main.Model.Line;
+import com.company.Model.Board;
+import com.company.Model.GameManager;
+import com.company.Model.Line;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class BoardTest {
     private Board board;

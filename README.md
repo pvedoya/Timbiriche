@@ -25,4 +25,4 @@ $ java -jar [target/file.jar]
 
 ## How to adapt it for your project
 
-Place all your code under `src/main/java`. Then, make sure to place the class containing the main method in the appropiate tag inside the `pom.xml` file.
+Place all your code under `src/appLauncher/java`. Then, make sure to place the class containing the appLauncher method in the appropiate tag inside the `pom.xml` file.

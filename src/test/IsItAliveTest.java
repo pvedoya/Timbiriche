@@ -1,8 +1,6 @@
-package test;
-
-import main.Model.AIPlayer;
-import main.Model.Board;
-import main.Model.Line;
+import com.company.Model.AIPlayer;
+import com.company.Model.Board;
+import com.company.Model.Line;
 import org.junit.Before;
 import org.junit.Test;
 

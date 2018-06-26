@@ -49,7 +49,7 @@ local.properties
 .recommenders/
 
 # Scala IDE specific (Scala & Java development for Eclipse)
-.cache-main
+.cache-appLauncher
 .scala_dependencies
 .worksheet
 
