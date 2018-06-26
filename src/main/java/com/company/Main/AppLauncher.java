@@ -2,6 +2,7 @@ package com.company.Main;
 
 import com.company.Controller.Controller;
 import com.company.Model.GameManager;
+import com.company.View.View;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -37,8 +38,9 @@ public class AppLauncher extends Application implements Serializable{
 
         FXMLLoader paneLoader = new FXMLLoader(getClass().getResource("/gameView.fxml"));
         Parent root = paneLoader.load();
-        Controller controller = paneLoader.getController();
-        controller.setAppLauncher(this);
+        View view = paneLoader.getController();
+        Controller controller = new Controller(manager, this);
+        view.setController(controller);
 
         if(parameters.size() == 6){
             load();
@@ -52,8 +54,8 @@ public class AppLauncher extends Application implements Serializable{
 
         this.primaryStage.setScene(scene);
         this.primaryStage.show();
-
-        controller.initialize(manager);
+        controller.initialize(manager,this);
+        view.loadView();
     }
 
     /*

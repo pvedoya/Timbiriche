@@ -16,6 +16,8 @@ public class MiniMax {
     public static Line depthMiniMax(Board currBoard, int level, boolean prune, int player, int other) throws IOException {
         Node node  = new Node(currBoard,player,other,null);
         int best = MIN;
+        int alpha = MIN;
+        int beta = MAX;
         Line toAdd = null;
         Node bestBranch = null;
 
@@ -23,7 +25,7 @@ public class MiniMax {
         node.visit();
 
         for(Node out : node.outcomes){
-            int local = depthMiniMax(out,false,prune, level,Integer.MIN_VALUE,Integer.MAX_VALUE);
+            int local = depthMiniMax(out,false, prune,level ,alpha ,beta);
             if(local > best){
                 toAdd = out.getAdded();
                 best = local;
@@ -48,7 +50,7 @@ public class MiniMax {
     private static int depthMiniMax(Node node, boolean isMax, boolean prune, int level, int alpha, int beta) {
         node.visit();
         if (level == 0 || node.getBoard().availableMoves().isEmpty()) {
-            int eval = evaluate(node.getAdded(), node.getBoard(), node.getMax());
+            int eval = evaluate( node.getBoard(), node.getMax());
             node.setScore(eval);
             return eval;
         }
@@ -99,16 +101,20 @@ public class MiniMax {
      */
 
     public static Line timeMiniMax(Board currBoard, int time, boolean prune,int player, int other) throws IOException {
-        int best = MIN;
+        int alpha = MIN;
+        int beta = MAX;
+
         Node node = new Node(currBoard, player,other,null);
+        node.visit();
+        node.possibilities();
+
         Line toAdd = null;
         Node bestBranch = null;
+        int best = MIN;
 
-        node.possibilities();
-        node.visit();
 
         for(Node out : node.outcomes){
-            int local = timeMiniMax(out,false,time + System.currentTimeMillis(),prune,Integer.MIN_VALUE,Integer.MAX_VALUE);
+            int local = timeMiniMax(out,false,time + System.currentTimeMillis(),prune,alpha,beta);
             if(local > best){
                 toAdd = out.getAdded();
                 best = local;
@@ -135,8 +141,8 @@ public class MiniMax {
     private static int timeMiniMax(Node node, boolean isMax, long maxTime, boolean prune, int alpha, int beta) {
         node.visit();
 
-        if(System.currentTimeMillis() >= maxTime ||  node.getBoard().availableMoves().isEmpty()){
-            int eval = evaluate(node.getAdded(), node.getBoard(), node.getMax());
+        if(node.getBoard().isComplete()|| System.currentTimeMillis() >= maxTime){
+            int eval = evaluate( node.getBoard(), node.getMax());
             node.setScore(eval);
             return eval;
         }
@@ -186,13 +192,13 @@ public class MiniMax {
     *Heuristic, called for each leaf of the minimax tree. For more information see the Project Report.
      */
 
-    private static int evaluate(Line added, Board board, int player){
+    private static int evaluate( Board board, int player){
         int value;
         value = board.scoreDifference(player)  * 20;
         if(board.getCurrentPlayer() == player){
-            value = value - board.sizeNSquares(3)*5 + board.sizeNSquares(2); //the idea is that the ai doesn't want to leave size 3 squares but it wants to leave size two squares tho
+            value = value - board.sizeNSquares(3)*5 - board.sizeNSquares(2); //the idea is that the ai doesn't want to leave size 2 or 3 squares
         }else{
-            value = value + board.sizeNSquares(3)*5 - board.sizeNSquares(2);
+            value = value + board.sizeNSquares(3)*5 + board.sizeNSquares(2);
         }
         return value;
     }
