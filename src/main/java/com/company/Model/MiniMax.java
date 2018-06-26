@@ -25,7 +25,7 @@ public class MiniMax {
         node.visit();
 
         for(Node out : node.outcomes){
-            int local = depthMiniMax(out,false, prune,level ,alpha ,beta);
+            int local = depthMiniMax(out,false, prune,level,alpha ,beta);
             if(local > best){
                 toAdd = out.getAdded();
                 best = local;
@@ -36,7 +36,7 @@ public class MiniMax {
         bestBranch.use();
         node.setScore(best);
         node.use();
-        node.createFile();
+        node.dotFileCreator();
         return toAdd;
     }
 
@@ -64,11 +64,12 @@ public class MiniMax {
                 int local = depthMiniMax(out, false, prune, level - 1, alpha, beta);
                 if(local > max){
                     max = local;
-                    alpha = Math.max(alpha, local);
                     maxNode = out;
-                    if (prune && beta <= alpha) {
-                        return max;
-                    }
+
+                }
+                alpha = Math.max(alpha, max);
+                if (prune && beta <= alpha) {
+                    return max;
                 }
             }
             node.setScore(max);
@@ -80,14 +81,15 @@ public class MiniMax {
             node.possibilities();
 
             for (Node out : node.outcomes) {
-                int local = depthMiniMax(out, true, prune, level - 1, alpha, beta);
+                int local = depthMiniMax(out, true, prune, level-1, alpha, beta);
                 if(local < min){
                     min = local;
-                    beta = Math.min(beta, local);
                     minNode = out;
-                    if (prune && beta <= alpha) {
-                        return min;
-                    }
+
+                }
+                beta = Math.min(beta, min);
+                if (prune && beta <= alpha) {
+                    return min;
                 }
             }
             node.setScore(min);
@@ -125,7 +127,7 @@ public class MiniMax {
         bestBranch.use();
         node.setScore(best);
         node.use();
-        node.createFile();
+        node.dotFileCreator();
         return toAdd;
     }
 
@@ -136,7 +138,6 @@ public class MiniMax {
     * This algorithm uses a pre defined time as a stop parameter.
      */
 
-    //TODO:corregir que no se si anda joya
 
     private static int timeMiniMax(Node node, boolean isMax, long maxTime, boolean prune, int alpha, int beta) {
         node.visit();
@@ -156,11 +157,12 @@ public class MiniMax {
                 int local = timeMiniMax(out,!isMax,maxTime,prune,alpha,beta);
                 if(local > max){
                     max = local;
-                    alpha = Math.max(alpha, local);
                     maxNode = out;
-                    if (prune && beta <= alpha) {
-                        return max;
-                    }
+
+                }
+                alpha = Math.max(alpha, max);
+                if (prune && beta <= alpha) {
+                    return max;
                 }
             }
             node.setScore(max);
@@ -175,11 +177,11 @@ public class MiniMax {
                 int local = timeMiniMax(out,true,maxTime,prune,alpha,beta);
                 if(local < min){
                     min = local;
-                    beta = Math.min(beta, local);
                     minNode = out;
-                    if (prune && beta <= alpha) {
-                        return min;
-                    }
+                }
+                beta = Math.min(beta, min);
+                if (prune && beta <= alpha) {
+                    return min;
                 }
             }
             node.setScore(min);
@@ -194,11 +196,11 @@ public class MiniMax {
 
     private static int evaluate( Board board, int player){
         int value;
-        value = board.scoreDifference(player)  * 20;
+        value = board.scoreDifference(player) *30;
         if(board.getCurrentPlayer() == player){
-            value = value - board.sizeNSquares(3)*5 - board.sizeNSquares(2); //the idea is that the ai doesn't want to leave size 2 or 3 squares
+            value = value - board.sizeNSquares(3)*10 - board.sizeNSquares(2); //the idea is that the ai doesn't want to leave size 2 or 3 squares
         }else{
-            value = value + board.sizeNSquares(3)*5 + board.sizeNSquares(2);
+            value = value + board.sizeNSquares(3)*10 + board.sizeNSquares(2);
         }
         return value;
     }

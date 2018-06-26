@@ -94,7 +94,7 @@ public class Node {
     * It is based on the exercise on the graphs Guide, after building the tree by adding the relevant information from each node,it exports it to the source file.
      */
 
-    public void createFile() throws IOException {
+    public void dotFileCreator() throws IOException {
         File file = new File("dotFile.dot");
         FileWriter fileWriter = new FileWriter(file);
         //starts tree
@@ -110,14 +110,14 @@ public class Node {
         fileWriter.write("];\n");
         ///calls for son nodes
         for(Node node : this.outcomes){
-            createFile(node, fileWriter);
+            dotFileCreator(node, fileWriter);
             fileWriter.write(this.id + "->"+ node.id +"\n");
         }
         fileWriter.write("}\n");
         fileWriter.close();
     }
 
-    private void createFile(Node node, FileWriter fileWriter) throws IOException {
+    private void dotFileCreator(Node node, FileWriter fileWriter) throws IOException {
         fileWriter.write(node.id + " [label=\"");
         fileWriter.write("Score: " + node.score + "\", shape = " + getShape(node));
 
@@ -130,7 +130,7 @@ public class Node {
 
         fileWriter.write("];\n");
         for(Node outcome : node.outcomes){
-            createFile(outcome,fileWriter);
+            dotFileCreator(outcome,fileWriter);
             fileWriter.write(node.id + "->" + outcome.id + "\n");
         }
     }
